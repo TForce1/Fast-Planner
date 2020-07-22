@@ -1,0 +1,12 @@
+<package>
+  <description brief="planner_executer">
+
+     planner_executer
+
+  </description>
+  <author>root</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/planner_executer</url>
+
+</package>
