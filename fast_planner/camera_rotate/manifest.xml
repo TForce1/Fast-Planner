@@ -1,0 +1,12 @@
+<package>
+  <description brief="camera_rotate">
+
+     camera_rotate
+
+  </description>
+  <author>tfpc</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/camera_rotate</url>
+
+</package>

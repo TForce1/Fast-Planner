@@ -58,6 +58,9 @@
     
   </include>
 
+  <!-- Camera Rotation -->
+  <node pkg="camera_rotate" name="camera_rotate" type="camera_rotate.py" respawn="true" />
+
   <!-- trajectory server -->
   <node pkg="plan_manage" name="traj_server" type="traj_server" output="screen">
     <remap from="/position_cmd" to="planning/pos_cmd"/>
