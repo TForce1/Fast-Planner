@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 
 import rospy
 import math
@@ -8,7 +8,7 @@ from geometry_msgs.msg import PoseStamped
 from geometry_msgs.msg import Quaternion
 from geometry_msgs.msg import Point
 from geometry_msgs.msg import Pose
-from tf.tranformations import *
+from tf.transformations import *
 
 
 class CameraRotate:
@@ -23,13 +23,13 @@ class CameraRotate:
     ROTATION_RPY = [-P, 0, -P]
 
     def __init__(self):
-        rospy.init_node(self.NODE_NAME, anonympus=False)
+        rospy.init_node(self.NODE_NAME, anonymous=False)
         self.sub = rospy.Subscriber(self.ODOMETRY_TOPIC, Odometry, self.transform)
         self.pub = rospy.Publisher(self.CAMERA_POSE_TOPIC, PoseStamped, queue_size=self.QUEUE_SIZE)
         self.rot_quat = quaternion_from_euler(self.ROTATION_RPY[0], self.ROTATION_RPY[1], self.ROTATION_RPY[2])
         self.pub_rate = rospy.Rate(self.RATE_HZ)
         rospy.loginfo("<<Camera Pose Rotation>>: node: %s, input_topic: /%s, output_topic: /%s" % \
-                      self.NODE_NAME, self.ODOMETRY_TOPIC, self.CAMERA_POSE_TOPIC)
+                      (self.NODE_NAME, self.ODOMETRY_TOPIC, self.CAMERA_POSE_TOPIC))
 
     def transform(self, msg):
         orientation = msg.pose.pose.orientation
@@ -54,4 +54,4 @@ if __name__ == '__main__':
 
     except rospy.ROSInterruptException:
         pass
-    
+
