@@ -86,7 +86,4 @@
 
 </launch> 
 
-    <arg name="odometry_topic" value="$(arg odom_topic)" />
-  </include>
 
-</launch>
