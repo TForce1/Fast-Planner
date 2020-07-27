@@ -1,4 +1,3 @@
-
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
@@ -7,17 +6,17 @@ import argparse
 import time
 
 import rospy
-from dronekit import connect, VehicleMode, LoactionGlobal
+from dronekit import connect, VehicleMode, LocationGlobal
 import rospy
 from pymavlink import mavutil
 
 from math import pi as PI
 
-from nav_msg.msg import Path
+#from nav_msg.msg import Path
 from quadrotor_msgs.msg import PositionCommand
 
 
-TAKEOFF_OFFSET = 2
+TAKEOFF_OFFSET = 1
 NODE_NAME = 'planner_executer'
 POS_CMD_TOPIC_NAME = '/planning/pos_cmd'
 
@@ -66,9 +65,9 @@ def arm_and_takeoff(aTargetAltitude):
     # Wait until the vehicle reaches a safe height before processing the goto
     # (otherwise the command after vehicle.simple_takeoff will execute immediately).
     while True:
-        print(" Altitude: " , vehicle.location_global_relative_frame.alt)
+        print(" Altitude: " , vehicle.location.global_relative_frame.alt)
         # Break and return from function just below target altitude
-        if vehicle.location_global_relative_frame.alt >= aTargetAltitude * 0.95:
+        if vehicle.location.global_relative_frame.alt >= aTargetAltitude * 0.95:
             print("Reached target altitude")
             break
         time.sleep(1)
@@ -76,12 +75,12 @@ def arm_and_takeoff(aTargetAltitude):
 
 def pos_cmd_calibrate(pos_cmd):
     pos_x = pos_cmd.position.x
-    pos_y = pos_cmd.position.y
-    pos_z = pos_cmd.position.z
+    pos_y = pos_cmd.position.y * -1
+    pos_z = pos_cmd.position.z * -1 
 
     vel_x = pos_cmd.velocity.x
-    vel_y = pos_cmd.velocity.y
-    vel_z = pos_cmd.velocity.z
+    vel_y = pos_cmd.velocity.y * -1
+    vel_z = pos_cmd.velocity.z * -1
 
     yaw = 2 * PI - pos_cmd.yaw
     yaw_rate = pos_cmd.yaw_dot * -1
@@ -103,14 +102,14 @@ def execute_pos_cmd(pos_cmd):
     frame = mavutil.mavlink.MAV_FRAME_LOCAL_NED
 
     # create the SET_POSITION_TARGET_LOCAL_NED command
-    msg = vehicle.message_factory.set_position_target_global_int_encode(
+    msg = vehicle.message_factory.set_position_target_local_ned_encode(
         0,                  # time_boot_ms (not used)
         0, 0,               # target system, target component
         frame,              # frame
         0b0000001111000000, # type_mask (only speeds enabled)
-        pos_x,                  # lat_int - X Position in WGS84 frame in 1e7 * meters
-        pos_y,                  # lon_int - Y Position in WGS84 frame in 1e7 * meters
-        pos_z,                  # alt - Altitude in meters in AMSL altitude(not WGS84 if absolute or relative)
+        pos_x,                  # X Positio
+        pos_y,                  # Y Position 
+        pos_z,                  # alt - Altitude in meters
         vel_x,                  # X velocity in NED frame in m/s
         vel_y,                  # Y velocity in NED frame in m/s
         vel_z,                  # Z velocity in NED frame in m/s
@@ -123,7 +122,7 @@ def execute_pos_cmd(pos_cmd):
 
 def planner_listener():
     rospy.init_node(NODE_NAME, anonymous=False)
-    sub = rospy.subscriber(POS_CMD_TOPIC_NAME, PositionCommand, execute_pos_cmd)
+    sub = rospy.Subscriber(POS_CMD_TOPIC_NAME, PositionCommand, execute_pos_cmd)
     rospy.spin()
 
 
