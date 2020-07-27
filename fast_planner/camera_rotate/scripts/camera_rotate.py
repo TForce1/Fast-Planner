@@ -20,7 +20,7 @@ class CameraRotate:
     RATE_HZ=10
     #ROTATION_RPY = [0, 0, math.pi/2]
     P = math.pi/2
-    ROTATION_RPY = [-P, 0, -P]
+    ROTATION_RPY = [-P, 0, -P * 0.5]
 
     def __init__(self):
         rospy.init_node(self.NODE_NAME, anonymous=False)
@@ -42,10 +42,10 @@ class CameraRotate:
 
         self.pub.publish(camera_pose_msg)
 
-        @staticmethod
-        def quaternion_rotation(rot_quat, quat):
-            quat_mul = quaternion_multiply(rot_quat, quat)
-            return quat_mul / np.linalg.norm(quat_mul)
+    @staticmethod
+    def quaternion_rotation(rot_quat, quat):
+        quat_mul = quaternion_multiply(quat, rot_quat)
+        return quat_mul / np.linalg.norm(quat_mul)
 
 if __name__ == '__main__':
     try:
