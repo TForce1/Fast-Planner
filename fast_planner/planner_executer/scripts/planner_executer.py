@@ -7,70 +7,34 @@ import time
 
 import rospy
 from dronekit import connect, VehicleMode, LocationGlobal
-import rospy
-from pymavlink import mavutil
+#import rospy
+#from pymavlink import mavutil
 
-from math import pi as PI
+#from math import pi as PI
 
-#from nav_msg.msg import Path
-from quadrotor_msgs.msg import PositionCommand
+
+
+#from quadrotor_msgs.msg import PositionCommand
+from simulation.flight_command import fly,connect
+
 
 
 TAKEOFF_OFFSET = 1
 NODE_NAME = 'planner_executer'
 POS_CMD_TOPIC_NAME = '/planning/pos_cmd'
 
-parser = argparse.ArgumentParser(description='Planner commands execution')
-parser.add_argument('--connect', help="Vehicle connection target string. If not specified, SITL automatically started and used")
-args = parser.parse_args()
+#parser = argparse.ArgumentParser(description='Planner commands execution')
+#parser.add_argument('--connect', help="Vehicle connection target string. If not specified, SITL automatically started and used")
+#args = parser.parse_args()
 
-connection_string = args.connect
-sitl = None
+#connection_string = args.connect
+#sitl = None
 
 #Start STIL if no connection string specified
-if not connection_string:
-    import dronekit_sitl
-    sitl = dronekit_sitl.start_default()
-    connection_string = sitl.connection_string()
-
-# Connect to the Vehicle
-print('Connecting to vehicle on: %s' % connection_string)
-vehicle = connect(connection_string, wait_ready=True)
-
-
-def arm_and_takeoff(aTargetAltitude):
-    """
-    Arms vehicle and takeoff to aTargetAltitude
-    """
-
-    print("Basic pre-arm checks")
-    # Don't try to arm until autopilot is ready
-    while not  vehicle.is_armable:
-        print(" Waiting for vehicle to initialise...")
-        time.sleep(1)
-
-    print("Arming motors")
-    # Copter should arm in GUIDED mode
-    vehicle.mode = VehicleMode("GUIDED")
-    vehicle.armed = True
-
-    # Confirm vehicle armed before attempting to take take off
-    while not vehicle.armed:
-        print(" Waiting for arming...")
-        time.sleep(1)
-
-    print("Taking off!")
-    vehicle.simple_takeoff(aTargetAltitude) # Take Off target altitude
-
-    # Wait until the vehicle reaches a safe height before processing the goto
-    # (otherwise the command after vehicle.simple_takeoff will execute immediately).
-    while True:
-        print(" Altitude: " , vehicle.location.global_relative_frame.alt)
-        # Break and return from function just below target altitude
-        if vehicle.location.global_relative_frame.alt >= aTargetAltitude * 0.95:
-            print("Reached target altitude")
-            break
-        time.sleep(1)
+#if not connection_string:
+#    import dronekit_sitl
+#    sitl = dronekit_sitl.start_default()
+#    connection_string = sitl.connection_string()
 
 
 def pos_cmd_calibrate(pos_cmd):
@@ -128,9 +92,12 @@ def planner_listener():
 
 def main():
     rospy.loginfo("Listening to position commands from Planner Algorithm. ")
+    
+    vehicle = connect()
+    fly(vehicle,TAKEOFF_OFFSET)
 
-    arm_and_takeoff(TAKEOFF_OFFSET)
-    planner_listener()
+    #planner_listener()
 
 if __name__ == '__main__':
     main()
+
