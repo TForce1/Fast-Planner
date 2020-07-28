@@ -1,46 +1,45 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-
 import argparse
 import time
 
 import rospy
 from dronekit import connect, VehicleMode, LocationGlobal
-#import rospy
-#from pymavlink import mavutil
+import rospy
+from pymavlink import mavutil
 
-#from math import pi as PI
+from math import pi as PI
 
-
-
-#from quadrotor_msgs.msg import PositionCommand
+from quadrotor_msgs.msg import PositionCommand
 from simulation.flight_command import fly,connect
-
-
 
 TAKEOFF_OFFSET = 1
 NODE_NAME = 'planner_executer'
 POS_CMD_TOPIC_NAME = '/planning/pos_cmd'
 
-#parser = argparse.ArgumentParser(description='Planner commands execution')
-#parser.add_argument('--connect', help="Vehicle connection target string. If not specified, SITL automatically started and used")
-#args = parser.parse_args()
+parser = argparse.ArgumentParser(description='Planner commands execution')
+parser.add_argument('--connect', help="Vehicle connection target string. If not specified, SITL automatically started and used")
+args = parser.parse_args()
 
-#connection_string = args.connect
-#sitl = None
+connection_string = args.connect
+sitl = None
 
-#Start STIL if no connection string specified
-#if not connection_string:
-#    import dronekit_sitl
-#    sitl = dronekit_sitl.start_default()
-#    connection_string = sitl.connection_string()
+# Start STIL if no connection string specified
+if not connection_string:
+    import dronekit_sitl
+    sitl = dronekit_sitl.start_default()
+    connection_string = sitl.connection_string()
+
+print('Connecting to vehicle on: %s' % connection_string)
+# vehicle = connect(connection_string, wait_ready=True)
+vehicle = connect(connection_string)
 
 
 def pos_cmd_calibrate(pos_cmd):
     pos_x = pos_cmd.position.x
     pos_y = pos_cmd.position.y * -1
-    pos_z = pos_cmd.position.z * -1 
+    pos_z = pos_cmd.position.z * -1
 
     vel_x = pos_cmd.velocity.x
     vel_y = pos_cmd.velocity.y * -1
@@ -72,7 +71,7 @@ def execute_pos_cmd(pos_cmd):
         frame,              # frame
         0b0000001111000000, # type_mask (only speeds enabled)
         pos_x,                  # X Positio
-        pos_y,                  # Y Position 
+        pos_y,                  # Y Position
         pos_z,                  # alt - Altitude in meters
         vel_x,                  # X velocity in NED frame in m/s
         vel_y,                  # Y velocity in NED frame in m/s
@@ -92,11 +91,11 @@ def planner_listener():
 
 def main():
     rospy.loginfo("Listening to position commands from Planner Algorithm. ")
-    
+
     vehicle = connect()
     fly(vehicle,TAKEOFF_OFFSET)
 
-    #planner_listener()
+    planner_listener()
 
 if __name__ == '__main__':
     main()
