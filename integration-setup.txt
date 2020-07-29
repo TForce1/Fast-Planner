@@ -5,7 +5,7 @@ roscore
 killp gz; rosrun gazebo_ros gazebo iris_with_corridor.world --verbose
 
 # 3.ArduPilot SITL
-cd ~/ardupilot/ArduCopter; sim_vehicle.py -f gazebo-iris
+cd ~/ardupilot/ArduCopter; sim_vehicle.py -f gazebo-iris -w
 
 # 4.Fast-Planner
 roslaunch plan_manage tf_kino_replan.launch
