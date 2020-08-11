@@ -17,9 +17,7 @@ class GlobalPath:
 
     NODE_NAME="global_path"
     ODOMETRY_TOPIC="odom"
-    # WAYPOINTS_TOPIC="waypoint_generator/waypoints_vis"
     WAYPOINTS_TOPIC="anchor_waypoints"
-    #WAYPOINTS_TOPIC="waypoint_generator/waypoints"
     QUEUE_SIZE=100
     SAFE_DISTANCE=3
 

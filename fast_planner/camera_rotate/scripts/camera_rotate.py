@@ -14,17 +14,19 @@ from tf.transformations import *
 class CameraRotate:
 
     NODE_NAME="camera_rotate"
+    #ODOMETRY_TOPIC="vins_estimator/imu_propagate"
     ODOMETRY_TOPIC="odom"
     CAMERA_POSE_TOPIC="camera_pose"
-    QUEUE_SIZE=10
-    RATE_HZ=10
-    #ROTATION_RPY = [0, 0, math.pi/2]
+    QUEUE_SIZE=5
+    RATE_HZ=30
     P = math.pi/2
     ROTATION_RPY = [-P, 0, -P]
+    #ROTATION_RPY = [0, 0, 0]
+    #ROTATION_RPY = [-P, -P, -P]
 
     def __init__(self):
         rospy.init_node(self.NODE_NAME, anonymous=False)
-        self.sub = rospy.Subscriber(self.ODOMETRY_TOPIC, Odometry, self.transform)
+        self.sub = rospy.Subscriber(self.ODOMETRY_TOPIC, Odometry, self.transform, queue_size=self.QUEUE_SIZE)
         self.pub = rospy.Publisher(self.CAMERA_POSE_TOPIC, PoseStamped, queue_size=self.QUEUE_SIZE)
         self.rot_quat = quaternion_from_euler(self.ROTATION_RPY[0], self.ROTATION_RPY[1], self.ROTATION_RPY[2])
         self.pub_rate = rospy.Rate(self.RATE_HZ)
@@ -41,6 +43,7 @@ class CameraRotate:
         camera_pose_msg = PoseStamped(header=msg.header, pose=position_msg)
 
         self.pub.publish(camera_pose_msg)
+        #self.pub_rate.sleep()
 
     @staticmethod
     def quaternion_rotation(rot_quat, quat):
