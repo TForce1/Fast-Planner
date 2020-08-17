@@ -15,7 +15,7 @@ class CameraRotate:
 
     NODE_NAME="camera_rotate"
     #ODOMETRY_TOPIC="vins_estimator/imu_propagate"
-    ODOMETRY_TOPIC="odom"
+    ODOMETRY_TOPIC="iris_ground_truth"
     CAMERA_POSE_TOPIC="camera_pose"
     QUEUE_SIZE=5
     RATE_HZ=30

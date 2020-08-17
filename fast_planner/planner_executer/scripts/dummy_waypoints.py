@@ -17,14 +17,16 @@ class GlobalPath:
 
     NODE_NAME="global_path"
     ODOMETRY_TOPIC="iris_ground_truth"
-    WAYPOINTS_TOPIC="anchor_waypoints"
-    QUEUE_SIZE=100
+    WAYPOINTS_TOPIC="/trigger"
     SAFE_DISTANCE=3
+    QUEUE_SIZE=1
+    RATE_HZ=30
 
     def __init__(self):
         rospy.init_node(self.NODE_NAME, anonymous=False)
         self.sub = rospy.Subscriber(self.ODOMETRY_TOPIC, Odometry, self.transform)
-        self.pub = rospy.Publisher(self.WAYPOINTS_TOPIC, PoseStamped, queue_size=self.QUEUE_SIZE)
+        self.pub = rospy.Publisher(self.WAYPOINTS_TOPIC, Point, queue_size=self.QUEUE_SIZE)
+        self.pub_rate = rospy.Rate(self.RATE_HZ)
         rospy.loginfo("<<Global Path>>: node: %s, input_topic: /%s, output_topic: /%s" % \
                       (self.NODE_NAME, self.ODOMETRY_TOPIC, self.WAYPOINTS_TOPIC))
 
@@ -41,22 +43,18 @@ class GlobalPath:
         return False
 
     def transform(self, msg):
-        if self.mission_accomplished:
-            return
-        if (self.current_point == 0 or self.reached_position(self.SAFE_DISTANCE, msg.pose.pose.position, self.way_points[self.current_point-1])):
-            dest_x, dest_y, dest_z = self.way_points[self.current_point]
+        #if self.mission_accomplished:
+            #return
+        dest_x, dest_y, dest_z = self.way_points[self.current_point]
 
-            # PoseStamped Message
+        if not self.mission_accomplished:
             point = Point(x=dest_x, y=dest_y, z=dest_z)
-            position_msg = Pose(position=point, orientation=Quaternion(0,0,0,1))
-            path_pose_stamped = PoseStamped(header=msg.header, pose=position_msg)
+            self.pub.publish(point)
+            self.pub_rate.sleep()
 
-            time.sleep(1)
-            self.pub.publish(path_pose_stamped)
-            print("Send %d,%d,%d" % (dest_x, dest_y, dest_z))
-
+        if (self.current_point == 0 or self.reached_position(self.SAFE_DISTANCE, msg.pose.pose.position, self.way_points[self.current_point-1])):
+            rospy.loginfo("(%d,%d,%d) dummy waypoint!" % (dest_x, dest_y, dest_z))
             self.current_point += 1
-
             if (self.current_point == len(self.way_points)):
                 print("MISSION ACCOMPLISHED!!!")
                 self.mission_accomplished = True
