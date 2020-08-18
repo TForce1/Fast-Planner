@@ -36,7 +36,7 @@ class GlobalPath:
     def reached_position(safe_distance, position, point):
         distance = math.sqrt(((point[0] - position.x)**2)+((point[1] - position.y)**2))
         if distance <= safe_distance:
-            print "reached the destination"
+            print("Reached the destination")
             return True
         return False
 
