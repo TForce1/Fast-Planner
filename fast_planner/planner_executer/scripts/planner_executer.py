@@ -26,9 +26,8 @@ args = parser.parse_args()
 connection_string = args.connect
 sitl = None
 
-QUEUE_SIZE=1
-SUBSCRIBE_RATE_HZ=30
-g_rate = 0
+QUEUE_SIZE=100
+SUBSCRIBE_RATE_HZ=100
 
 print('Connecting to vehicle on: %s' % connection_string)
 vehicle = connect(connection_string, wait_ready=True)
@@ -47,6 +46,7 @@ def pos_cmd_calibrate(pos_cmd):
             float(acc_x), float(acc_y), float(acc_z),
             float(yaw), float(yaw_rate))
 
+
 def execute_pos_cmd(pos_cmd):
     pos_x, pos_y, pos_z, vel_x, vel_y, vel_z, acc_x, acc_y, acc_z, yaw, yaw_rate = pos_cmd_calibrate(pos_cmd)
     #pos_x, pos_y, pos_z, vel_x, vel_y, vel_z, acc_x, acc_y, acc_z, yaw, yaw_rate = 50,0,-0.5, 1,0,0, 0,0,0, 0,0
@@ -57,31 +57,25 @@ def execute_pos_cmd(pos_cmd):
         0,
         0, 0,
         mavutil.mavlink.MAV_FRAME_LOCAL_NED,
-        0b0000111111000111,    # type_mask (only speeds enabled)
+        0b0000001111000000,    # type_mask (only speeds enabled)
         pos_x, pos_y, pos_z,
         vel_x, vel_y, vel_z,
-        acc_x, acc_y, acc_z,    # afx, afy, afz acceleration (not supported yet, ignored in GCS_Mavlink)
-        yaw, yaw_rate)
+        0,0,0,    # afx, afy, afz acceleration (not supported yet, ignored in GCS_Mavlink)
+        yaw,yaw_rate)
 
-    global g_rate
-    #g_rate.sleep()
     vehicle.send_mavlink(msg)
     vehicle.flush()
 
-    rospy.loginfo(msg)
-
 
 def planner_listener():
-    global g_rate
     rospy.init_node(NODE_NAME, anonymous=False)
-    g_rate = rospy.Rate(SUBSCRIBE_RATE_HZ)
     sub = rospy.Subscriber(POS_CMD_TOPIC_NAME, PositionCommand, execute_pos_cmd, queue_size=QUEUE_SIZE)
     rospy.spin()
+
 
 def main():
     rospy.loginfo("Listening to position commands from Planner Algorithm. ")
 
-    vehicle = connect(connection_string, wait_ready=True)
     fly(vehicle,TAKEOFF_OFFSET)
     planner_listener()
 
