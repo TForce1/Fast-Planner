@@ -16,10 +16,8 @@ from tf.transformations import *
 class GlobalPath:
 
     NODE_NAME="global_path"
-    ODOMETRY_TOPIC="odom"
-    # WAYPOINTS_TOPIC="waypoint_generator/waypoints_vis"
+    ODOMETRY_TOPIC="iris_ground_truth"
     WAYPOINTS_TOPIC="anchor_waypoints"
-    #WAYPOINTS_TOPIC="waypoint_generator/waypoints"
     QUEUE_SIZE=100
     SAFE_DISTANCE=3
 
@@ -38,7 +36,7 @@ class GlobalPath:
     def reached_position(safe_distance, position, point):
         distance = math.sqrt(((point[0] - position.x)**2)+((point[1] - position.y)**2))
         if distance <= safe_distance:
-            print "reached the destination"
+            print("Reached the destination")
             return True
         return False
 
