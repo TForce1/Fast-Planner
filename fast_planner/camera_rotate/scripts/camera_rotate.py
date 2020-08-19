@@ -51,11 +51,6 @@ class CameraRotate:
 
 if __name__ == '__main__':
 
-    # parser = argparse.ArgumentParser(description='Rotate camera pose of simulator to match FP coordinate system')
-    # parser.add_argument('--odom', default=DEFAULT_ODOM_TOPIC_NAME, help='Topic name to subscribe. If not specified, subscribing to /iris_ground_truth')
-    # parser.add_argument('ros_args', nargs='?', help='ROS arguments from launch file')
-    # args = parser.parse_args()
-
     args = rospy.myargv(sys.argv)
     odom = args[1]
 
