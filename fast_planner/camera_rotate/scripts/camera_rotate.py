@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import argparse
 import rospy
 import math
 import numpy as np
@@ -10,26 +11,24 @@ from geometry_msgs.msg import Point
 from geometry_msgs.msg import Pose
 from tf.transformations import *
 
+DEFAULT_ODOM_TOPIC_NAME="/iris_ground_truth"
+
 
 class CameraRotate:
 
     NODE_NAME="camera_rotate"
-    ODOMETRY_TOPIC="odom"
     CAMERA_POSE_TOPIC="camera_pose"
-    QUEUE_SIZE=10
-    RATE_HZ=10
-    #ROTATION_RPY = [0, 0, math.pi/2]
     P = math.pi/2
     ROTATION_RPY = [-P, 0, -P]
 
-    def __init__(self):
+    def __init__(self, odometry_topic):
         rospy.init_node(self.NODE_NAME, anonymous=False)
-        self.sub = rospy.Subscriber(self.ODOMETRY_TOPIC, Odometry, self.transform)
-        self.pub = rospy.Publisher(self.CAMERA_POSE_TOPIC, PoseStamped, queue_size=self.QUEUE_SIZE)
+        self.odom = odometry_topic
+        self.sub = rospy.Subscriber(self.odom, Odometry, self.transform)
+        self.pub = rospy.Publisher(self.CAMERA_POSE_TOPIC, PoseStamped)
         self.rot_quat = quaternion_from_euler(self.ROTATION_RPY[0], self.ROTATION_RPY[1], self.ROTATION_RPY[2])
-        self.pub_rate = rospy.Rate(self.RATE_HZ)
-        rospy.loginfo("<<Camera Pose Rotation>>: node: %s, input_topic: /%s, output_topic: /%s" % \
-                      (self.NODE_NAME, self.ODOMETRY_TOPIC, self.CAMERA_POSE_TOPIC))
+        rospy.loginfo("<<Camera Pose Rotation>>: node: %s, input_topic: %s, output_topic: %s" % \
+                      (self.NODE_NAME, self.odom, self.CAMERA_POSE_TOPIC))
 
     def transform(self, msg):
         orientation = msg.pose.pose.orientation
@@ -47,11 +46,19 @@ class CameraRotate:
         quat_mul = quaternion_multiply(rot_quat, quat)
         return quat_mul / np.linalg.norm(quat_mul)
 
+
 if __name__ == '__main__':
+
+    # parser = argparse.ArgumentParser(description='Rotate camera pose of simulator to match FP coordinate system')
+    # parser.add_argument('--odom', default=DEFAULT_ODOM_TOPIC_NAME, help='Topic name to subscribe. If not specified, subscribing to /iris_ground_truth')
+    # parser.add_argument('ros_args', nargs='?', help='ROS arguments from launch file')
+    # args = parser.parse_args()
+
     try:
-        camera_rotate = CameraRotate()
+        #camera_rotate = CameraRotate(args.odom)
+        camera_rotate = CameraRotate(odometry_topic='/iris_ground_truth')
         rospy.spin()
 
     except rospy.ROSInterruptException:
-        pass
+        rospy.logerr("ROSInterruptException was thrown from camera_rotate")
 
