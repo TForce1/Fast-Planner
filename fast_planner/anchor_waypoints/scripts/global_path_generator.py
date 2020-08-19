@@ -3,6 +3,7 @@
 import rospy
 import math
 import time
+import argparse
 import numpy as np
 from nav_msgs.msg import Odometry
 from nav_msgs.msg import Path
@@ -16,16 +17,15 @@ from tf.transformations import *
 class GlobalPath:
 
     NODE_NAME="global_path"
-    ODOMETRY_TOPIC="iris_ground_truth"
     WAYPOINTS_TOPIC="anchor_waypoints"
-    QUEUE_SIZE=100
     SAFE_DISTANCE=3
 
-    def __init__(self):
+    def __init__(self, odometry_topic):
         rospy.init_node(self.NODE_NAME, anonymous=False)
-        self.sub = rospy.Subscriber(self.ODOMETRY_TOPIC, Odometry, self.transform)
-        self.pub = rospy.Publisher(self.WAYPOINTS_TOPIC, PoseStamped, queue_size=self.QUEUE_SIZE)
-        rospy.loginfo("<<Global Path>>: node: %s, input_topic: /%s, output_topic: /%s" % \
+        self.odom = odometry_topic
+        self.sub = rospy.Subscriber(self.odom, Odometry, self.transform)
+        self.pub = rospy.Publisher(self.WAYPOINTS_TOPIC, PoseStamped)
+        rospy.loginfo("<<Global Path>>: node: %s, input_topic: %s, output_topic: %s" % \
                       (self.NODE_NAME, self.ODOMETRY_TOPIC, self.WAYPOINTS_TOPIC))
 
         self.way_points = [[50,0,1],[100,0,1],[100,-50,1],[100,-100,1]]
@@ -63,10 +63,15 @@ class GlobalPath:
 
 
 if __name__ == '__main__':
+
     try:
-        path = GlobalPath()
+        parser = argparse.ArgumentParser(description='Rotate camera pose of simulator to match FP coordinate system')
+        parser.add_argument('--odom', help='Topic name to subscribe. If not specified, subscribing to /iris_ground_truth',
+                            default='/iris_ground_truth')
+        args = parser.parse_args()
+
+        path = GlobalPath(args.odom)
         rospy.spin()
 
     except rospy.ROSInterruptException:
-        pass
-
+        rospy.logerr("ROSInterruptException was thrown from global_path_generator")
