@@ -45,6 +45,9 @@ def pos_cmd_calibrate(pos_cmd):
         float(vel_x),
         float(vel_y),
         float(vel_z),
+        float(acc_x),
+        float(acc_y),
+        float(acc_z),
         float(yaw),
         float(yaw_rate),
         )
