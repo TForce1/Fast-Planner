@@ -18,6 +18,7 @@ class CameraRotate:
 
     NODE_NAME="camera_rotate"
     CAMERA_POSE_TOPIC="camera_pose"
+    QUEUE_SIZE=100
     P = math.pi/2
     ROTATION_RPY = [-P, 0, -P]
 
@@ -25,7 +26,7 @@ class CameraRotate:
         rospy.init_node(self.NODE_NAME, anonymous=False)
         self.odom = odometry_topic
         self.sub = rospy.Subscriber(self.odom, Odometry, self.transform)
-        self.pub = rospy.Publisher(self.CAMERA_POSE_TOPIC, PoseStamped)
+        self.pub = rospy.Publisher(self.CAMERA_POSE_TOPIC, PoseStamped, queue_size=self.QUEUE_SIZE)
         self.rot_quat = quaternion_from_euler(self.ROTATION_RPY[0], self.ROTATION_RPY[1], self.ROTATION_RPY[2])
         rospy.loginfo("<<Camera Pose Rotation>>: node: %s, input_topic: %s, output_topic: %s" % \
                       (self.NODE_NAME, self.odom, self.CAMERA_POSE_TOPIC))
