@@ -1,28 +1,33 @@
 <launch>
 
   <arg name="ground_truth" default="false"/>
-  <arg name="odom_topic" value="/vins_estimator/odometry" />
+
+  <!-- Set odometry to VIO output -->
+  <arg name="odom" value="/vins_estimator/odometry" />
 
   <!-- Set odometry to ground truth if in 'ground truth' mode -->
-  <arg name="odom_topic" value="/iris_ground_truth" if="$(eval arg('ground_truth') == 'true')" />
+  <arg name="odom" value="/iris_ground_truth" if="$(eval arg('ground_truth') == 'true')" />
 
   <!-- main algorithm params -->
-  <arg name="kino_config_file"/>
-  <include file="$(find plan_manage)/config/launch/$(arg kino_config_file)"/>
+  <arg name="config_file"/>
+  <include file="$(find plan_manage)/launch/config/$(arg config_file)" >
+    <arg name="odom_topic" value="$(arg odom)"/>
+  </include>
 
   <!-- Camera Rotation -->
-  <node pkg="camera_rotate" name="camera_rotate" type="camera_rotate.py" args="$(arg odom_topic)" respawn="true" />
+  <node pkg="camera_rotate" name="camera_rotate" type="camera_rotate.py" args="$(arg odom)" respawn="true" />
 
   <!-- trajectory server -->
   <node pkg="plan_manage" name="traj_server" type="traj_server" output="screen">
     <remap from="/position_cmd" to="planning/pos_cmd"/>
 
-    <remap from="/odom_world" to="$(arg odom_topic)"/>
+    <remap from="/odom_world" to="$(arg odom)"/>
     <param name="traj_server/time_forward" value="1.5" type="double"/>
   </node>
 
   <node pkg="waypoint_generator" name="waypoint_generator" type="waypoint_generator" output="screen">
-    <remap from="~odom" to="$(arg odom_topic)"/>        
+    <remap from="~odom" to="$(arg odom)"/>
+    <!-- Set goal to Global Navigation output -->
     <remap from="~goal" to="/anchor_waypoints"/>
     <remap from="~traj_start_trigger" to="/traj_start_trigger" />
     <param name="waypoint_type" value="manual-lonely-waypoint"/>    
