@@ -3,6 +3,7 @@
 import argparse
 import rospy
 import math
+import sys
 import numpy as np
 from nav_msgs.msg import Odometry
 from geometry_msgs.msg import PoseStamped
@@ -55,10 +56,13 @@ if __name__ == '__main__':
     # parser.add_argument('ros_args', nargs='?', help='ROS arguments from launch file')
     # args = parser.parse_args()
 
+    args = rospy.myargv(sys.argv)
+    odom = args[1]
+
     try:
-        #camera_rotate = CameraRotate(args.odom)
-        camera_rotate = CameraRotate(odometry_topic='/iris_ground_truth')
+        camera_rotate = CameraRotate(odom)
         rospy.spin()
+        pass
 
     except rospy.ROSInterruptException:
         rospy.logerr("ROSInterruptException was thrown from camera_rotate")
