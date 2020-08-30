@@ -44,7 +44,7 @@ class CameraRotate:
 
     @staticmethod
     def quaternion_rotation(rot_quat, quat):
-        quat_mul = quaternion_multiply(rot_quat, quat)
+        quat_mul = quaternion_multiply(quat, rot_quat)
         return quat_mul / np.linalg.norm(quat_mul)
 
 
