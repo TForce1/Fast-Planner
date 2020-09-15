@@ -12,8 +12,15 @@ from pymavlink import mavutil
 from math import pi as PI
 
 from quadrotor_msgs.msg import PositionCommand
+from nav_msgs.msg import Odometry
+from geometry_msgs.msg import Quaternion
+from geometry_msgs.msg import Point
+from geometry_msgs.msg import Pose
+from geometry_msgs.msg import PoseStamped
+
 from simulation.flight_command import fly, fly_gps
 from simulation.math_utils.coordinates_utils import ENUtoNEDBodyFrame
+from tf.transformations import *
 
 TAKEOFF_OFFSET = 1
 NODE_NAME = 'planner_executer'
@@ -26,11 +33,10 @@ args = parser.parse_args()
 
 connection_string = args.connect
 gps_available = args.gps
-sitl = None
+prev_cmd = None
 
 print('Connecting to vehicle on: %s' % connection_string)
 vehicle = connect(connection_string, wait_ready=True)
-
 
 def pos_cmd_calibrate(pos_cmd):
     pos_x, pos_y, pos_z = ENUtoNEDBodyFrame(pos_cmd.position.x, pos_cmd.position.y, pos_cmd.position.z)
@@ -96,6 +102,43 @@ def main():
     else:
         print("Taking off with NO GPS")
         fly(vehicle, TAKEOFF_OFFSET)
+    # time.sleep(10)
+    #
+    # frame = mavutil.mavlink.MAV_FRAME_LOCAL_NED
+    # y = 0
+    # THRESH = 1
+    # msg = vehicle.message_factory.set_position_target_local_ned_encode(
+    #     0,  # time_boot_ms (not used)
+    #     0, 0,  # target system, target component
+    #     frame,  # frame
+    #     0b0000101111000000,  # type_mask (only acceleration disabled)
+    #     0, y, -1,  # Position in (m)
+    #     0, -3, 0,  # Velocity in NED frame in (m/s)
+    #     0, 0, 0,  # Acceleration (not supported yet, ignored in GCS_Mavlink)
+    #     0, 0)
+    #
+    # print(msg)
+    # vehicle.send_mavlink(msg)
+    # vehicle.flush()
+    # while True:
+    #     if abs(vehicle.location.local_frame.east - y) <= THRESH:
+    #         y = abs(y) - 30
+    #         msg = vehicle.message_factory.set_position_target_local_ned_encode(
+    #             0,  # time_boot_ms (not used)
+    #             0, 0,  # target system, target component
+    #             frame,  # frame
+    #             0b0000101111000000,  # type_mask (only acceleration disabled)
+    #             0, y, -1,  # Position in (m)
+    #             0, -3, 0,  # Velocity in NED frame in (m/s)
+    #             0, 0, 0,  # Acceleration (not supported yet, ignored in GCS_Mavlink)
+    #             0, 0)
+    #
+    #         print(msg)
+    #         vehicle.send_mavlink(msg)
+    #         vehicle.flush()
+    #
+    #
+    #         time.sleep(5)
     planner_listener()
 
 if __name__ == '__main__':
