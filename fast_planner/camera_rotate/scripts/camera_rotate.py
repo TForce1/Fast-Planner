@@ -12,8 +12,6 @@ from geometry_msgs.msg import Point
 from geometry_msgs.msg import Pose
 from tf.transformations import *
 
-DEFAULT_ODOM_TOPIC_NAME="/iris_ground_truth"
-
 
 class CameraRotate:
 
