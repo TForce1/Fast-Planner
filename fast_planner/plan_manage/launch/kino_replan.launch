@@ -81,7 +81,7 @@
     <arg name="c_num" value="10"/>
     <arg name="p_num" value="150"/>
 
-    <arg name="odometry_topic" value="$(arg odom_topic_" />
+    <arg name="odometry_topic" value="$(arg odom_topic)" />
   </include>
 
 </launch> 

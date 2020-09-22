@@ -17,18 +17,19 @@ from tf.transformations import *
 class GlobalPath:
 
     NODE_NAME="global_path"
-    WAYPOINTS_TOPIC="anchor_waypoints"
-    SAFE_DISTANCE=3
+    WAYPOINTS_TOPIC="/anchor_waypoints"
+    SAFE_DISTANCE=10
 
     def __init__(self, odometry_topic):
         rospy.init_node(self.NODE_NAME, anonymous=False)
         self.odom = odometry_topic
         self.sub = rospy.Subscriber(self.odom, Odometry, self.transform)
-        self.pub = rospy.Publisher(self.WAYPOINTS_TOPIC, PoseStamped)
+        self.pub = rospy.Publisher(self.WAYPOINTS_TOPIC, PoseStamped, queue_size=10)
         rospy.loginfo("<<Global Path>>: node: %s, input_topic: %s, output_topic: %s" % \
                       (self.NODE_NAME, self.odom, self.WAYPOINTS_TOPIC))
 
-        self.way_points = [[50,0,1],[100,0,1],[100,-50,1],[100,-100,1]]
+        self.way_points = [[32,0,1],[32,-30,1]]
+        # self.way_points = [[20,0,1],[32,0,1],[32,-30,1]]
         self.current_point = 0
         self.mission_accomplished = False
 
@@ -53,7 +54,8 @@ class GlobalPath:
 
             time.sleep(1)
             self.pub.publish(path_pose_stamped)
-            print("Send %d,%d,%d" % (dest_x, dest_y, dest_z))
+            # print("Send %d,%d,%d" % (dest_x, dest_y, dest_z))
+            print(path_pose_stamped)
 
             self.current_point += 1
 

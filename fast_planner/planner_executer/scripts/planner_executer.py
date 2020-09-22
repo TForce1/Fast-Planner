@@ -12,7 +12,7 @@ from pymavlink import mavutil
 from math import pi as PI
 
 from quadrotor_msgs.msg import PositionCommand
-from simulation.flight_command import fly
+from simulation.flight_command import fly, fly_gps
 from simulation.math_utils.coordinates_utils import ENUtoNEDBodyFrame
 
 TAKEOFF_OFFSET = 1
@@ -21,9 +21,11 @@ POS_CMD_TOPIC_NAME = '/planning/pos_cmd'
 
 parser = argparse.ArgumentParser(description='Planner commands execution')
 parser.add_argument('--connect', help="Vehicle connection target string. If not specified, SITL automatically started and used")
+parser.add_argument('--gps', help="Is vehicle's ardupilot configured with or without GPS. If not specified, GPS is set to False", default=False)
 args = parser.parse_args()
 
 connection_string = args.connect
+gps_available = args.gps
 sitl = None
 
 print('Connecting to vehicle on: %s' % connection_string)
@@ -54,7 +56,11 @@ def pos_cmd_calibrate(pos_cmd):
 
 
 def execute_pos_cmd(pos_cmd):
+    print("Got pos_cmd\n")
     pos_x, pos_y, pos_z, vel_x, vel_y, vel_z, acc_x, acc_y, acc_z, yaw, yaw_rate = pos_cmd_calibrate(pos_cmd)
+    # vel_y, vel_z = [0, 0]
+    # pos_z = -TAKEOFF_OFFSET
+    # vel_x = 10
 
     frame = mavutil.mavlink.MAV_FRAME_LOCAL_NED
 
@@ -69,6 +75,7 @@ def execute_pos_cmd(pos_cmd):
         0, 0, 0,               # Acceleration (not supported yet, ignored in GCS_Mavlink)
         yaw,yaw_rate)
 
+    print(msg)
     vehicle.send_mavlink(msg)
     vehicle.flush()
 
@@ -76,13 +83,19 @@ def execute_pos_cmd(pos_cmd):
 def planner_listener():
     rospy.init_node(NODE_NAME, anonymous=False)
     sub = rospy.Subscriber(POS_CMD_TOPIC_NAME, PositionCommand, execute_pos_cmd)
+
     rospy.spin()
 
 
 def main():
     rospy.loginfo("Listening to position commands from Planner Algorithm. ")
 
-    fly(vehicle,TAKEOFF_OFFSET)
+    if gps_available:
+        print("Taking off with GPS")
+        fly_gps(vehicle, TAKEOFF_OFFSET)
+    else:
+        print("Taking off with NO GPS")
+        fly(vehicle, TAKEOFF_OFFSET)
     planner_listener()
 
 if __name__ == '__main__':

@@ -20,7 +20,7 @@ from copter_utils.Attitude import set_yaw
 
 
 def fly(vehicle, aTargetAltitude):
-   
+
     # Wait for the copter to be ready
     print("Basic pre-arm checks")
     while vehicle.mode.name == "INITIALISING":
@@ -47,6 +47,30 @@ def fly(vehicle, aTargetAltitude):
             break
         time.sleep(0.2)
     set_mode(vehicle, "GUIDED")
+
+
+def fly_gps(vehicle, aTargetAltitude):
+
+    # Wait for the copter to be ready
+    print("Basic pre-arm checks")
+    while vehicle.mode.name == "INITIALISING":
+        print(" Waiting for vehicle to initialise...")
+        time.sleep(1)
+    time.sleep(3)
+
+    # Set home location
+    print("Setting home location")
+    while not vehicle.home_location:
+        set_home(vehicle)
+        time.sleep(1)
+    print("Home set to {}".format(vehicle.home_location))
+
+    # Arm the copter
+    print("Arming motors")
+    set_mode(vehicle, "GUIDED")
+    arm(vehicle)
+    vehicle.simple_takeoff(aTargetAltitude)
+
 
 def connect(connection_string='127.0.0.1:14551'):
     vehicle = dronekit.connect(connection_string, wait_ready = True)
