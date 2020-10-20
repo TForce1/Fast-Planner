@@ -58,9 +58,6 @@ def pos_cmd_calibrate(pos_cmd):
 def execute_pos_cmd(pos_cmd):
     print("Got pos_cmd\n")
     pos_x, pos_y, pos_z, vel_x, vel_y, vel_z, acc_x, acc_y, acc_z, yaw, yaw_rate = pos_cmd_calibrate(pos_cmd)
-    # vel_y, vel_z = [0, 0]
-    # pos_z = -TAKEOFF_OFFSET
-    # vel_x = 10
 
     frame = mavutil.mavlink.MAV_FRAME_LOCAL_NED
 
