@@ -29,8 +29,9 @@
   <arg name="fy" default="347.997568216904"/>
 
   <!-- maximum velocity and acceleration the drone will reach -->
-  <arg name="max_vel" default="1.0" />
-  <arg name="max_acc" default="0.5" />
+  <arg name="max_vel" default="4.0" />
+  <arg name="max_acc" default="1.0" />
+  <arg name="dt_yaw" default="0.9" />
 
   <!-- 1: use 2D Nav Goal to select goal  -->
   <!-- 2: use global waypoints below - UNSUPPORTED  -->
@@ -44,6 +45,13 @@
   <!-- main algorithm params -->
   <arg name="config_file" default="tf_kino_algorithm.xml"/>
 
+  <!-- optimization params -->
+  <arg name="lambda1" default="10.0" />
+  <arg name="lambda2" default="0.8" />
+  <arg name="lambda3" default="0.00001" />
+  <arg name="lambda4" default="0.1" />
+  <arg name="lambda7" default="100" />
+  <arg name="dist0" default="0.7" />
 
   <!-- Extended launch file -->
   <include file="$(find plan_manage)/launch/config/$(arg config_file)" >
@@ -62,6 +70,14 @@
     <arg name="max_acc" value="$(arg max_acc)" />
     <arg name="flight_type" value="$(arg flight_type)" />
     <arg name="goal_waypoint_topic" value="$(arg goal_waypoint_topic)" />
+    <arg name="dt_yaw" value="$(arg dt_yaw)" />
+    <arg name="lambda1" value="$(arg lambda1)" />
+    <arg name="lambda2" value="$(arg lambda2)" />
+    <arg name="lambda3" value="$(arg lambda3)" />
+    <arg name="lambda4" value="$(arg lambda4)" />
+    <arg name="lambda7" value="$(arg lambda7)" />
+    <arg name="dist0" value="$(arg dist0)" />
+
   </include>
 
 </launch> 

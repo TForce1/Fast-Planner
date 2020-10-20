@@ -12,8 +12,16 @@
     <arg name="fy" />
     <arg name="max_vel" />
     <arg name="max_acc" />
+    <arg name="dt_yaw" />
+    <arg name="lambda1" />
+    <arg name="lambda2" />
+    <arg name="lambda3" />
+    <arg name="lambda4" />
+    <arg name="lambda7" />
+    <arg name="dist0" />
     <arg name="flight_type" />
     <arg name="goal_waypoint_topic" />
+    
 
     <!-- main node -->
     <node pkg="plan_manage" name="fast_planner_node" type="fast_planner_node" output="screen">
@@ -37,10 +45,10 @@
         <param name="sdf_map/local_update_range_x"  value="20.0" /> 
         <param name="sdf_map/local_update_range_y"  value="20.0" /> 
         <param name="sdf_map/local_update_range_z"  value="5.0" /> 
-        <param name="sdf_map/obstacles_inflation"     value="0.2" /> 
+        <param name="sdf_map/obstacles_inflation"     value="0.5" />
         <param name="sdf_map/local_bound_inflate"    value="0.0"/>
         <param name="sdf_map/local_map_margin" value="50"/>
-        <param name="sdf_map/ground_height"        value="0.0"/>
+        <param name="sdf_map/ground_height"        value="0.5"/>
 
         <!-- camera parameter -->
         <param name="sdf_map/cx" value="$(arg cx)"/>
@@ -69,9 +77,8 @@
         <param name="sdf_map/virtual_ceil_height"   value="2.5"/>
         <param name="sdf_map/show_occ_time"  value="false"/>
         <param name="sdf_map/show_esdf_time" value="false"/>
-        <param name="sdf_map/pose_type"     value="1"/>  
+        <param name="sdf_map/pose_type"     value="1"/>
         <param name="sdf_map/frame_id"      value="world"/>
-
         <!-- planner manager -->
         <param name="manager/max_vel" value="$(arg max_vel)" type="double"/>
         <param name="manager/max_acc" value="$(arg max_acc)" type="double"/>
@@ -101,14 +108,21 @@
         <param name="search/check_num" value="5" type="int"/>
 
         <!-- trajectory optimization -->
-        <param name="optimization/lambda1" value="10.0" type="double"/>
+        <param name="optimization/lambda1" value="$(arg lambda1)" type="double"/>
+        <param name="optimization/lambda2" value="$(arg lambda2)" type="double"/>
+        <param name="optimization/lambda3" value="$(arg lambda3)" type="double"/>
+        <param name="optimization/lambda4" value="$(arg lambda4)" type="double"/>
+        <param name="optimization/lambda7" value="$(arg lambda7)" type="double"/>
+        <param name="optimization/dist0" value="$(arg dist0)" type="double"/>
+        <!-- <param name="optimization/lambda1" value="10.0" type="double"/>
         <param name="optimization/lambda2" value="0.8" type="double"/>
         <param name="optimization/lambda3" value="0.00001" type="double"/>
         <param name="optimization/lambda4" value="0.01" type="double"/>
         <param name="optimization/lambda7" value="100.0" type="double"/>
-        <param name="optimization/dist0" value="0.7" type="double"/>
+        <param name="optimization/dist0" value="0.7" type="double"/> -->
         <param name="optimization/max_vel" value="$(arg max_vel)" type="double"/>
         <param name="optimization/max_acc" value="$(arg max_acc)" type="double"/>
+        <param name="optimization/dt_yaw" value="$(arg dt_yaw)" type="double"/>
 
         <param name="optimization/algorithm1" value="15" type="int"/>
         <param name="optimization/algorithm2" value="11" type="int"/>

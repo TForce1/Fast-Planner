@@ -20,6 +20,7 @@ void FastPlannerManager::initPlanModules(ros::NodeHandle& nh) {
   nh.param("manager/clearance_threshold", pp_.clearance_, -1.0);
   nh.param("manager/local_segment_length", pp_.local_traj_len_, -1.0);
   nh.param("manager/control_points_distance", pp_.ctrl_pt_dist, -1.0);
+  nh.param("optimization/dt_yaw", pp_.dt_yaw_, -1.0);
 
   bool use_geometric_path, use_kinodynamic_path, use_topo_path, use_optimization, use_active_perception;
   nh.param("manager/use_geometric_path", use_geometric_path, false);
@@ -280,7 +281,7 @@ bool FastPlannerManager::planGlobalTraj(const Eigen::Vector3d& start_pos) {
   auto time_now = ros::Time::now();
   global_data_.setGlobalTraj(gl_traj, time_now);
 
-  // truncate a local trajectory
+ // truncate a local trajectory
 
   double            dt, duration;
   Eigen::MatrixXd   ctrl_pts = reparamLocalTraj(0.0, dt, duration);
@@ -454,10 +455,7 @@ void FastPlannerManager::optimizeTopoBspline(double start_t, double duration,
   guide_pt.pop_back();
   guide_pt.erase(guide_pt.begin(), guide_pt.begin() + 2);
 
-  // std::cout << "guide pt num: " << guide_pt.size() << std::endl;
-  if (guide_pt.size() != int(ctrl_pts.rows()) - 6) ROS_WARN("what guide");
-
-  tm1 = (ros::Time::now() - t1).toSec();
+  // std::cout << "guide pt num: " << guide_ pp_.dt_yaw_
   t1  = ros::Time::now();
 
   // first phase, path-guided optimization
@@ -563,7 +561,7 @@ void FastPlannerManager::findCollisionRange(vector<Eigen::Vector3d>& colli_start
   // std::cout << "dt: " << dt << std::endl;
   // std::cout << "sn: " << sn << std::endl;
   // std::cout << "t_m: " << t_m << std::endl;
-  // std::cout << "t_mp: " << t_mp << std::endl;
+  // std:: pp_.dt_yaw_cout << "t_mp: " << t_mp << std::endl;
   // std::cout << "t_s: " << t_s << std::endl;
   // std::cout << "t_e: " << t_e << std::endl;
 
@@ -586,7 +584,9 @@ void FastPlannerManager::planYaw(const Eigen::Vector3d& start_yaw) {
   auto&  pos      = local_data_.position_traj_;
   double duration = pos.getTimeSum();
 
-  double dt_yaw  = 0.9;
+  double dt_yaw  = pp_.dt_yaw_;
+  //double dt_yaw  = 0.9;
+
   int    seg_num = ceil(duration / dt_yaw);
   dt_yaw         = duration / seg_num;
 
