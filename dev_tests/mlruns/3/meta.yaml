@@ -1,0 +1,4 @@
+artifact_location: /home/user/dev/multiple_runs_mlflow/mlruns
+experiment_id: '3'
+lifecycle_stage: active
+name: PSC_POSXY_P1

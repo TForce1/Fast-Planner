@@ -1,0 +1,5 @@
+artifact_location: /home/user/dev/multiple_runs_mlflow/mlruns
+experiment_id: '7'
+lifecycle_stage: active
+name: 1_11_lambdas1-3
+tags: {}

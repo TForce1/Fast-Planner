@@ -1,0 +1,4 @@
+artifact_location: /home/user/dev/multiple_runs_mlflow/mlruns
+experiment_id: '6'
+lifecycle_stage: active
+name: 25_10_max_vel_max_acc1

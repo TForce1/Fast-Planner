@@ -1,0 +1,5 @@
+artifact_location: /home/user/dev/multiple_runs_mlflow/mlruns
+experiment_id: '8'
+lifecycle_stage: active
+name: 2_11_dt_yaw_lambda7
+tags: {}

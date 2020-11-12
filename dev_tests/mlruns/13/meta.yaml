@@ -1,0 +1,4 @@
+artifact_location: /home/user/dev/multiple_runs_mlflow
+experiment_id: '13'
+lifecycle_stage: active
+name: 5_11_20_final_test_corridor

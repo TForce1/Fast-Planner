@@ -1,0 +1,15 @@
+artifact_uri: /home/user/dev/multiple_runs_mlflow/mlruns/e86e2086141f410e97188d452f194e72/artifacts
+end_time: 1604309802062
+entry_point_name: ''
+experiment_id: '7'
+lifecycle_stage: active
+name: ''
+run_id: e86e2086141f410e97188d452f194e72
+run_uuid: e86e2086141f410e97188d452f194e72
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1604309802033
+status: 3
+tags: []
+user_id: user
