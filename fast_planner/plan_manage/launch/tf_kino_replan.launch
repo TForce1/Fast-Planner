@@ -29,16 +29,17 @@
   <arg name="fy" default="347.997568216904"/>
 
   <!-- maximum velocity and acceleration the drone will reach -->
-  <arg name="max_vel" default="4.0" />
+  <arg name="max_vel" default="3.0" />
   <arg name="max_acc" default="1.0" />
-  <arg name="dt_yaw" default="0.9" />
+  <arg name="dt_yaw" default="0.5" />
 
   <!-- 1: use 2D Nav Goal to select goal  -->
   <!-- 2: use global waypoints below - UNSUPPORTED  -->
   <arg name="flight_type" default="1" />
 
   <!-- The topic of the waypoint goal to navigate to -->
-  <arg name="goal_waypoint_topic" default="/anchor_waypoints" />
+  <arg name="goal_waypoint_topic" default="/anchor_waypoints" /> 
+  <!-- <arg name="goal_waypoint_topic" default="/move_base_simple/goal" /> -->
 
   <!-- TODO: choose weather you follow global navigation or not -->
 
@@ -48,9 +49,9 @@
   <!-- optimization params -->
   <arg name="lambda1" default="10.0" />
   <arg name="lambda2" default="0.8" />
-  <arg name="lambda3" default="0.00001" />
+  <arg name="lambda3" default="0.01" />
   <arg name="lambda4" default="0.1" />
-  <arg name="lambda7" default="100" />
+  <arg name="lambda7" default="1" />
   <arg name="dist0" default="0.7" />
 
   <!-- Extended launch file -->
