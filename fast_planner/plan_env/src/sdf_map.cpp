@@ -799,13 +799,25 @@ void SDFMap::depthPoseCallback(const sensor_msgs::ImageConstPtr& img,
   /* get depth image */
   cv_bridge::CvImagePtr cv_ptr;
   cv_ptr = cv_bridge::toCvCopy(img, img->encoding);
-
+  std::cout << "depth encoding: " << img->encoding << std::endl;
+  cv::Mat tmp;
+  tmp = cv_ptr->image.clone();
   if (img->encoding == sensor_msgs::image_encodings::TYPE_32FC1) {
     (cv_ptr->image).convertTo(cv_ptr->image, CV_16UC1, mp_.k_depth_scaling_factor_);
   }
-  cv_ptr->image.copyTo(md_.depth_image_);
+  else if (img->encoding == sensor_msgs::image_encodings::BGR8) {
+    std::cout << "in if statement" << std::endl;
+    // (cv_ptr->image).convertTo(cv_ptr->image, CV_8UC1, 1);
+    cv::cvtColor(cv_ptr->image, tmp, cv::COLOR_BGR2GRAY);
+    cv_ptr->image = tmp;//cv_bridge::toCvCopy(tmp, sensor_msgs::image_encodings::TYPE_8UC1);
+    (cv_ptr->image).convertTo(cv_ptr->image, CV_16UC1, (mp_.k_depth_scaling_factor_ * 10.0) / 255.0);
+  }
 
-  // std::cout << "depth: " << md_.depth_image_.cols << ", " << md_.depth_image_.rows << std::endl;
+  cv_ptr->image.copyTo(md_.depth_image_);
+  // std::cout << "depth encoding after: " << (md_.depth_image_.type()==CV_16UC1) << std::endl;
+  // std::cout<<"tmp: " << (int)tmp.at<u_char>(0,0) << std::endl;
+  // std::cout << "cv+ptr: "<< cv_ptr->image.at<uint16_t>(0,0) << cv_ptr->image.at<uint16_t>(0,1) << std::endl;
+
 
   /* get pose */
   md_.camera_pos_(0) = pose->pose.position.x;
@@ -1268,10 +1280,15 @@ void SDFMap::depthOdomCallback(const sensor_msgs::ImageConstPtr& img,
 
   /* get depth image */
   cv_bridge::CvImagePtr cv_ptr;
+  cout << "image format: " << img->encoding << endl;
+
   cv_ptr = cv_bridge::toCvCopy(img, img->encoding);
   if (img->encoding == sensor_msgs::image_encodings::TYPE_32FC1) {
     (cv_ptr->image).convertTo(cv_ptr->image, CV_16UC1, mp_.k_depth_scaling_factor_);
   }
+  // if (img->encoding == sensor_msgs::image_encodings::TYPE_BGR8) {
+  //   (cv_ptr->image).convertTo(cv_ptr->image, CV_16UC1, mp_.k_depth_scaling_factor_);
+  // }
   cv_ptr->image.copyTo(md_.depth_image_);
 
   md_.occ_need_update_ = true;

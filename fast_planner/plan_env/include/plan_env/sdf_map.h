@@ -23,6 +23,7 @@
 #include <message_filters/time_synchronizer.h>
 
 #include <plan_env/raycast.h>
+#include <opencv2/opencv.hpp>
 
 #define logit(x) (log((x) / (1 - (x))))
 
