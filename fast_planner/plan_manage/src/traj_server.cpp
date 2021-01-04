@@ -5,12 +5,16 @@
 #include "std_msgs/Empty.h"
 #include "visualization_msgs/Marker.h"
 #include <ros/ros.h>
+#include "std_msgs/MultiArrayLayout.h"
+#include "std_msgs/MultiArrayDimension.h"
+#include "std_msgs/Float32MultiArray.h"
 
-ros::Publisher cmd_vis_pub, pos_cmd_pub, traj_pub;
+ros::Publisher cmd_vis_pub, pos_cmd_pub, traj_pub, obs_pub;
 
 nav_msgs::Odometry odom;
 
 quadrotor_msgs::PositionCommand cmd;
+std_msgs::Float32MultiArray obs;
 // double pos_gain[3] = {5.7, 5.7, 6.2};
 // double vel_gain[3] = {3.4, 3.4, 4.0};
 double pos_gain[3] = { 5.7, 5.7, 6.2 };
@@ -181,7 +185,6 @@ void cmdCallback(const ros::TimerEvent& e) {
 
   ros::Time time_now = ros::Time::now();
   double t_cur = (time_now - start_time_).toSec();
-
   Eigen::Vector3d pos, vel, acc, pos_f;
   double yaw, yawdot;
 
@@ -254,6 +257,63 @@ void cmdCallback(const ros::TimerEvent& e) {
   if (traj_cmd_.size() > 10000) traj_cmd_.erase(traj_cmd_.begin(), traj_cmd_.begin() + 1000);
 }
 
+void obsCallback(const ros::TimerEvent& e) {
+  /* no publishing before receive traj_ */
+  if (!receive_traj_) return;
+
+  ros::Time time_now = ros::Time::now();
+  obs.data.clear();
+  double t_cur = (time_now - start_time_).toSec();
+  double dt = 0.1;
+  double step_time = 0.5;
+  Eigen::Vector3d pos, vel, acc, pos_f;
+  double yaw, yawdot;
+  vector<double> observations;
+  double t_start = t_cur;
+  double t_pub = t_cur;
+  std::cout <<"================================\n";
+  std::cout << t_cur << "\n";
+  std::cout <<"================================\n";
+
+  while (t_pub >= 0.0 && t_pub <= t_start + step_time ) {
+    obs.data.push_back(t_pub - t_cur);
+      // obs.data.push_back(t_pub);
+
+    if (t_pub < traj_duration_ ){
+      pos = traj_[0].evaluateDeBoorT(t_pub);
+      vel = traj_[1].evaluateDeBoorT(t_pub);
+      yaw = traj_[3].evaluateDeBoorT(t_pub)[0];
+      yawdot = traj_[4].evaluateDeBoorT(t_pub)[0];
+    }
+    else if (t_cur >= traj_duration_) {
+      /* hover when finish traj_ */
+      pos = traj_[0].evaluateDeBoorT(traj_duration_);
+      vel.setZero();
+      acc.setZero();
+      yaw = traj_[3].evaluateDeBoorT(traj_duration_)[0];
+      yawdot = traj_[4].evaluateDeBoorT(traj_duration_)[0];
+
+    } else {
+      cout << "[Traj server]: invalid time." << endl;
+    }
+    // obs.data.insert(obs.data.end(), pos.begin(), pos.end());
+    // obs.data.insert(obs.data.end(), vel.begin(), vel.end());
+    obs.data.push_back(pos(0));
+    obs.data.push_back(pos(1));
+    obs.data.push_back(pos(2));
+    obs.data.push_back(vel(0));
+    obs.data.push_back(vel(1));
+    obs.data.push_back(vel(2));
+    obs.data.push_back(yaw);
+    obs.data.push_back(yawdot);
+
+    t_pub += dt;
+  } 
+
+  obs_pub.publish(obs);
+
+}
+
 int main(int argc, char** argv) {
   ros::init(argc, argv, "traj_server");
   ros::NodeHandle node;
@@ -266,9 +326,12 @@ int main(int argc, char** argv) {
 
   cmd_vis_pub = node.advertise<visualization_msgs::Marker>("planning/position_cmd_vis", 10);
   pos_cmd_pub = node.advertise<quadrotor_msgs::PositionCommand>("/position_cmd", 50);
+  obs_pub = node.advertise<std_msgs::Float32MultiArray>("/observations", 50);
   traj_pub = node.advertise<visualization_msgs::Marker>("planning/travel_traj", 10);
 
   ros::Timer cmd_timer = node.createTimer(ros::Duration(0.01), cmdCallback);
+  ros::Timer obs_timer = node.createTimer(ros::Duration(0.1), obsCallback);
+
   ros::Timer vis_timer = node.createTimer(ros::Duration(0.25), visCallback);
 
   /* control parameter */

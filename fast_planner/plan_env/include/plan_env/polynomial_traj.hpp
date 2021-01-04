@@ -136,6 +136,17 @@ public:
     return traj_vec3d;
   }
 
+    vector<Eigen::Vector3d> getTrajVel() {
+    double eval_t = 0.0;
+    traj_vec3d.clear();
+    while (eval_t < time_sum) {
+      Eigen::Vector3d vel = evaluateVel(eval_t);
+      traj_vec3d.push_back(vel);
+      eval_t += 0.01;
+    }
+    return traj_vec3d;
+  }
+
   double getLength() {
     length = 0.0;
 
