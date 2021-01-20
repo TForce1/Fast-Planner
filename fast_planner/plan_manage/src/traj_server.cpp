@@ -275,8 +275,7 @@ void obsCallback(const ros::TimerEvent& e) {
   std::cout << t_cur << "\n";
   std::cout <<"================================\n";
 
-  while (t_pub >= 0.0 && t_pub <= t_start + step_time ) {
-    obs.data.push_back(t_pub - t_cur);
+  while (t_pub >= 0.0 && t_pub < t_start + step_time ) {
       // obs.data.push_back(t_pub);
 
     if (t_pub < traj_duration_ ){
@@ -326,7 +325,7 @@ int main(int argc, char** argv) {
 
   cmd_vis_pub = node.advertise<visualization_msgs::Marker>("planning/position_cmd_vis", 10);
   pos_cmd_pub = node.advertise<quadrotor_msgs::PositionCommand>("/position_cmd", 50);
-  obs_pub = node.advertise<std_msgs::Float32MultiArray>("/observations", 50);
+  obs_pub = node.advertise<std_msgs::Float32MultiArray>("planning/observations", 50);
   traj_pub = node.advertise<visualization_msgs::Marker>("planning/travel_traj", 10);
 
   ros::Timer cmd_timer = node.createTimer(ros::Duration(0.01), cmdCallback);
