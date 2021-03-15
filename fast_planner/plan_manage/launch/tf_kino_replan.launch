@@ -4,7 +4,7 @@
   <arg name="ground_truth" default="false"/>
 
   <!-- topic of your odometry such as VIO or LIO -->
-  <arg name="odometry_topic" default="/vins_estimator/odometry" unless="$(arg ground_truth)"  />
+  <!--arg name="odometry_topic" default="/vins_estimator/odometry" unless="$(arg ground_truth)"  /-->
   <arg name="odometry_topic" default="/iris_ground_truth" if="$(arg ground_truth)" />
 
   <!-- size of map, change the size in x, y, z according to your application -->

@@ -275,9 +275,9 @@ void obsCallback(const ros::TimerEvent& e) {
   std::cout << t_cur << "\n";
   std::cout <<"================================\n";
 
-  while (t_pub >= 0.0 && t_pub < t_start + step_time ) {
+  //while (t_pub >= 0.0 && t_pub < t_start + step_time ) {
       // obs.data.push_back(t_pub);
-
+  for( int i = 0; i < 20; i = i + 1 ) { 
     if (t_pub < traj_duration_ ){
       pos = traj_[0].evaluateDeBoorT(t_pub);
       vel = traj_[1].evaluateDeBoorT(t_pub);
