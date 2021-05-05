@@ -48,7 +48,7 @@
         <param name="sdf_map/obstacles_inflation"     value="0.5" />
         <param name="sdf_map/local_bound_inflate"    value="0.0"/>
         <param name="sdf_map/local_map_margin" value="50"/>
-        <param name="sdf_map/ground_height"        value="0.5"/>
+        <param name="sdf_map/ground_height"        value="0.1"/>
 
         <!-- camera parameter -->
         <param name="sdf_map/cx" value="$(arg cx)"/>

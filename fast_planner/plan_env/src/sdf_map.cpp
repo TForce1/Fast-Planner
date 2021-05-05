@@ -799,7 +799,7 @@ void SDFMap::depthPoseCallback(const sensor_msgs::ImageConstPtr& img,
   /* get depth image */
   cv_bridge::CvImagePtr cv_ptr;
   cv_ptr = cv_bridge::toCvCopy(img, img->encoding);
-  std::cout << "depth encoding: " << img->encoding << std::endl;
+  //std::cout << "depth encoding: " << img->encoding << std::endl;
   cv::Mat tmp;
   tmp = cv_ptr->image.clone();
   if (img->encoding == sensor_msgs::image_encodings::TYPE_32FC1) {

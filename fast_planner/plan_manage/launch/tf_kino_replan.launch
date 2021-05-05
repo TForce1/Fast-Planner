@@ -4,12 +4,13 @@
   <arg name="ground_truth" default="false"/>
 
   <!-- topic of your odometry such as VIO or LIO -->
-  <arg name="odometry_topic" default="/vins_estimator/odometry" unless="$(arg ground_truth)"  />
+  <!-- <arg name="odometry_topic" default="/vins_estimator/odometry" unless="$(arg ground_truth)"  /> -->
+   <!-- <arg name="odometry_topic" default="/odom" if="$(arg ground_truth)" />  -->
   <arg name="odometry_topic" default="/iris_ground_truth" if="$(arg ground_truth)" />
 
   <!-- size of map, change the size in x, y, z according to your application -->
   <arg name="map_size_x" default="150.0"/>
-  <arg name="map_size_y" default="120.0"/>
+  <arg name="map_size_y" default="150.0"/>
   <arg name="map_size_z" default="3.0"/>
 
   <!-- camera pose: transform of camera frame in the world frame -->
@@ -29,8 +30,8 @@
   <arg name="fy" default="347.997568216904"/>
 
   <!-- maximum velocity and acceleration the drone will reach -->
-  <arg name="max_vel" default="3.0" />
-  <arg name="max_acc" default="1.0" />
+  <arg name="max_vel" default="0.5" />
+  <arg name="max_acc" default="0.25" />
   <arg name="dt_yaw" default="0.5" />
 
   <!-- 1: use 2D Nav Goal to select goal  -->
@@ -38,8 +39,8 @@
   <arg name="flight_type" default="1" />
 
   <!-- The topic of the waypoint goal to navigate to -->
-  <arg name="goal_waypoint_topic" default="/anchor_waypoints" /> 
-  <!-- <arg name="goal_waypoint_topic" default="/move_base_simple/goal" /> -->
+  <!-- <arg name="goal_waypoint_topic" default="/anchor_waypoints" /> --> 
+  <arg name="goal_waypoint_topic" default="/move_base_simple/goal" />
 
   <!-- TODO: choose weather you follow global navigation or not -->
 
