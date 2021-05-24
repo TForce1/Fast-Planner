@@ -30,8 +30,8 @@
   <arg name="fy" default="347.997568216904"/>
 
   <!-- maximum velocity and acceleration the drone will reach -->
-  <arg name="max_vel" default="1.0" />
-  <arg name="max_acc" default="0.5" />
+  <arg name="max_vel" default="0.5" />
+  <arg name="max_acc" default="0.3" />
   <arg name="dt_yaw" default="0.5" />
 
   <!-- 1: use 2D Nav Goal to select goal  -->
